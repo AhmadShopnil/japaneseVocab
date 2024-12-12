@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import Home from "../pages/Home";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Lessons from "../pages/user/Lessons";
@@ -11,42 +10,47 @@ import TutorialManagement from "../pages/admin/TutorialManagement";
 import VocabularyManagement from "../pages/admin/VocabularyManagement";
 import UserManagement from "../pages/admin/UserManagement";
 
-import CommonLayout from "../layout/CommonLayout";
-
 import NotFound from "../components/NotFound";
 
 import UserDashboard from "../pages/user/UserDashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Help from "../pages/Help";
 import { DashboardLayout } from "@/layout/DashboardLayout";
-
+import PrivateRoute from "./PrivateRoute";
+import CommonLayout from "@/layout/CommonLayout";
+import CommonRoute from "./CommonRoute";
 export const router = createBrowserRouter([
   // Routes under CommonLayout
   {
     path: "/",
-    element: <CommonLayout />,
+    element: (
+      <CommonRoute>
+        <CommonLayout />
+      </CommonRoute>
+    ),
     children: [
-      { index: true, element: <Home /> }, // Root route rendering Home
+      { index: true, element: <Login /> }, // Root route rendering Home
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
     ],
   },
 
+  // { path: "login", element: <Login /> },
+  // { path: "register", element: <Register /> },
+
   // Routes under DashboardLayout
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <PrivateRoute allowedRoles={["user"]}>
+        <DashboardLayout />{" "}
+      </PrivateRoute>
+    ),
     children: [
       // User Routes
       {
         path: "user",
-        element: (
-          // <PrivateRoute>
-          //   <UserDashboard />
-          // </PrivateRoute>
-
-          <UserDashboard />
-        ),
+        element: <UserDashboard />,
       },
       {
         path: "user/lessons",

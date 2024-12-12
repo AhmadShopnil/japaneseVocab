@@ -1,9 +1,17 @@
+import { logout, selectCurrentUser } from "@/redux/api/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { removeUser } from "@/services/authServices";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectCurrentUser);
 
+  const handleLogOut = () => {
+    removeUser();
+    dispatch(logout());
+    // router.push("/");
+  };
   return (
     <nav className="bg-black text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -26,7 +34,7 @@ const Navbar = () => {
               )}
               <li>
                 <button
-                  onClick={logout}
+                  onClick={handleLogOut}
                   className="bg-red-500 px-2 py-1 rounded"
                 >
                   Logout

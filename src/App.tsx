@@ -1,13 +1,13 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes/router";
-import { AuthProvider } from "./contexts/AuthContext";
+import Providers from "./lib/Providers/Providers";
 
 function App() {
   return (
     <div className="container mx-auto">
-      <AuthProvider>
+      <Providers>
         <RouterProvider router={router} />
-      </AuthProvider>
+      </Providers>
     </div>
   );
 }

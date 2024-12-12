@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
-  const { user } = useAuth();
+  const user = { role: "user" };
   // const user = true;
   return (
     <div className="text-center">

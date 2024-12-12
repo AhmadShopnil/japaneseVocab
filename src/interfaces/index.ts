@@ -33,3 +33,9 @@ export interface TSidebarItem {
   path: string;
   icon: any;
 }
+
+export type TUserJwtPayload = {
+  userId: string;
+  role: string;
+  email: string;
+};
