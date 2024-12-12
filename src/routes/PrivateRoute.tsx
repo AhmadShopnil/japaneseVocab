@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { selectCurrentUser } from "@/redux/api/slices/authSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { Navigate } from "react-router-dom";
@@ -9,10 +7,7 @@ interface PrivateRouteProps {
   allowedRoles?: string[]; // You can optionally allow different roles
 }
 
-const PrivateRoute = ({
-  children,
-  allowedRoles = ["user"],
-}: PrivateRouteProps) => {
+const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const user = useAppSelector(selectCurrentUser);
 
   // const role = user?.role;

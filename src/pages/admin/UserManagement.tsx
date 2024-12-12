@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TUserResponse } from "@/interfaces";
 import {
   useChangeUserRoleMutation,
@@ -9,7 +8,7 @@ const UserManagement = () => {
   const [changeUserRole] = useChangeUserRoleMutation();
 
   // Get all Users
-  const { data: users, isLoading: isUsersLoading } = useGetAllUsersQuery("");
+  const { data: users } = useGetAllUsersQuery("");
 
   const handleRoleChange = async (
     userId: string,

@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { Link } from "react-router-dom";
 import { TLesson } from "../../interfaces";
 import { useGetAllLessonsQuery } from "@/redux/api/lessonApi";
 
 const Lessons = () => {
   // get all lessons
-  const { data: lessons, isLoading: isLessonLoading } =
-    useGetAllLessonsQuery("");
+  const { data: lessons } = useGetAllLessonsQuery("");
 
   return (
     <div>

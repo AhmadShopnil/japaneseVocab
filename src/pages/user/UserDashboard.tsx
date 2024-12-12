@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Profile from "@/components/Profile";
 import { useGetMyProfileQuery } from "@/redux/api/userApi";
 
 const UserDashboard = () => {
-  const { data: profile, isLoading, isError, error } = useGetMyProfileQuery("");
+  const { data: profile } = useGetMyProfileQuery("");
 
   return (
     <div>

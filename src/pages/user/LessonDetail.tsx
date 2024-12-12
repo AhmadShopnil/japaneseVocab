@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Confetti from "react-confetti";
@@ -13,12 +12,7 @@ const LessonDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
 
-  const {
-    data: lesson,
-    isLoading,
-    isError,
-    error,
-  } = useGetSingleLessonByIdQuery(lessonId);
+  const { data: lesson } = useGetSingleLessonByIdQuery(lessonId);
 
   useEffect(() => {
     if (lesson?.data?.vocabularies) {

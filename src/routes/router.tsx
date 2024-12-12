@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <PrivateRoute allowedRoles={["user"]}>
+      <PrivateRoute>
         <DashboardLayout />{" "}
       </PrivateRoute>
     ),

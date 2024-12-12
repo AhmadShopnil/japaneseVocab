@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -14,14 +14,13 @@ import UpdateLesson from "@/components/Admin/UpdateLesson";
 
 const LessonManagement = () => {
   const [newLesson, setNewLesson] = useState({ name: "", lessonNo: "" });
-  const [addLesson, { isLoading }] = useAddLessonMutation();
-  const [deleteLesson, { isLoading: isDeleting }] = useDeleteLessonMutation();
+  const [addLesson] = useAddLessonMutation();
+  const [deleteLesson] = useDeleteLessonMutation();
   const [selectedLesson, setSelectedLesson] = useState<TLesson | null>();
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   // Get lessons
-  const { data: lessons, isLoading: isLessonLoading } =
-    useGetAllLessonsQuery("");
+  const { data: lessons } = useGetAllLessonsQuery("");
 
   // Handle add a new lesson
   const handleAddLesson = async (e: React.FormEvent) => {

@@ -4,17 +4,12 @@
 import TutorialCardMange from "@/components/Admin/TutorialCardMange";
 import {
   useAddTutorialMutation,
-  useDeleteTutorialMutation,
   useGetAllTutorialsQuery,
 } from "@/redux/api/totorialApi";
 import { useState } from "react";
 
 const TutorialManagement = () => {
-  const {
-    data: tutorials = [],
-    isLoading,
-    isError,
-  } = useGetAllTutorialsQuery("");
+  const { data: tutorials = [] } = useGetAllTutorialsQuery("");
   const [addTutorial, { isLoading: isAdding }] = useAddTutorialMutation();
 
   const [newTutorial, setNewTutorial] = useState({

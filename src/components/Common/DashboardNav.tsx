@@ -11,7 +11,6 @@ export function DashboardNav() {
   const handleLogOut = () => {
     removeUser();
     dispatch(logout());
-    // router.push("/");
   };
 
   return (
