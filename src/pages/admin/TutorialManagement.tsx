@@ -1,59 +1,45 @@
-import { useState, useEffect } from "react";
-import { Tutorial } from "../../types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import {
+  useAddTutorialMutation,
+  useDeleteTutorialMutation,
+  useGetAllTutorialsQuery,
+} from "@/redux/api/totorialApi";
+import { useState } from "react";
 
 const TutorialManagement = () => {
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const {
+    data: tutorials = [],
+    isLoading,
+    isError,
+  } = useGetAllTutorialsQuery("");
+  const [addTutorial, { isLoading: isAdding }] = useAddTutorialMutation();
+  const [deleteTutorial] = useDeleteTutorialMutation();
   const [newTutorial, setNewTutorial] = useState({
     title: "",
     videoId: "",
-    description: "",
+    otherResource: "",
   });
-
-  useEffect(() => {
-    // Fetch tutorials from API
-
-    const fetchTutorials = async () => {
-      const response = await fetch("/api/tutorials");
-      const data = await response.json();
-      setTutorials(data);
-    };
-
-    fetchTutorials();
-  }, []);
 
   const handleAddTutorial = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add new tutorial to API
 
-    const response = await fetch("/api/tutorials", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newTutorial),
-    });
-
-    if (response.ok) {
-      const addedTutorial = await response.json();
-      setTutorials([...tutorials, addedTutorial]);
-      setNewTutorial({ title: "", videoId: "", description: "" });
-    } else {
-      alert("Failed to add tutorial");
+    try {
+      await addTutorial(newTutorial).unwrap();
+      // Automatically update the tutorial list after adding the new tutorial
+      setNewTutorial({ title: "", videoId: "", otherResource: "" });
+    } catch (error: any) {
+      console.log(error);
     }
   };
 
   const handleDeleteTutorial = async (tutorialId: string) => {
     if (window.confirm("Are you sure you want to delete this tutorial?")) {
-      // Delete tutorial from API
-
-      const response = await fetch(`/api/tutorials/${tutorialId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setTutorials(
-          tutorials.filter((tutorial) => tutorial.id !== tutorialId)
-        );
-      } else {
-        alert("Failed to delete tutorial");
+      try {
+        await deleteTutorial(tutorialId).unwrap();
+      } catch (error: any) {
+        console.log(error);
       }
     }
   };
@@ -84,36 +70,36 @@ const TutorialManagement = () => {
         />
         <input
           type="text"
-          value={newTutorial.description}
+          value={newTutorial.otherResource}
           onChange={(e) =>
-            setNewTutorial({ ...newTutorial, description: e.target.value })
+            setNewTutorial({ ...newTutorial, otherResource: e.target.value })
           }
-          placeholder="Description"
-          required
+          placeholder="Other Resource"
           className="border p-2 mr-2"
         />
         <button
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
+          disabled={isAdding}
         >
-          Add Tutorial
+          {isAdding ? "Adding..." : "Add Tutorial"}
         </button>
       </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {tutorials.map((tutorial) => (
-          <div key={tutorial.id} className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">{tutorial.title}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden ">
+        {tutorials?.data?.map((tutorial: any) => (
+          <div key={tutorial._id} className="bg-white p-4 rounded shadow">
+            <h3 className="text-xl font-semibold mb-2">{tutorial?.title}</h3>
             <div className="aspect-w-16 aspect-h-9 mb-2">
               <iframe
-                src={`https://www.youtube.com/embed/${tutorial.videoId}`}
+                src={`https://www.youtube.com/embed/${tutorial?.videoId}`}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
             </div>
-            <p className="mb-2">{tutorial.description}</p>
+            <p className="mb-2">{tutorial?.otherResource}</p>
             <button
-              onClick={() => handleDeleteTutorial(tutorial.id)}
+              onClick={() => handleDeleteTutorial(tutorial._id)}
               className="bg-red-500 text-white px-2 py-1 rounded"
             >
               Delete

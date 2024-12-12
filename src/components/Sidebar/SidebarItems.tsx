@@ -23,15 +23,16 @@ export const adminMenuItem: TSidebarItem[] = [
     path: "/dashboard/admin/lessons",
     icon: BookOpen,
   },
-  {
-    name: "Tutorial Management",
-    path: "/dashboard/admin/tutorials",
-    icon: FileText,
-  },
+
   {
     name: "Vocabulary Management",
     path: "/dashboard/admin/vocabulary",
     icon: CircleHelp,
+  },
+  {
+    name: "Tutorial Management",
+    path: "/dashboard/admin/tutorials",
+    icon: FileText,
   },
 ];
 

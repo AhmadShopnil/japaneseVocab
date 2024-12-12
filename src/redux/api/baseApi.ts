@@ -20,5 +20,5 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery,
   endpoints: () => ({}),
-  tagTypes: ["users", "vocabularies", "lessons", "profile"],
+  tagTypes: ["users", "vocabularies", "lessons", "profile", "tutorials"],
 });

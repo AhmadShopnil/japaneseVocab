@@ -42,11 +42,12 @@ export interface TVocabulary {
 }
 
 export interface TTutorial {
-  id: string;
+  _id: string;
   title: string;
   videoId: string;
-  description: string;
+  otherResource: string;
 }
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface TSidebarItem {
   name: string;
