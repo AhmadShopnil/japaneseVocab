@@ -1,80 +1,74 @@
-import { useState, useEffect } from "react";
-import { Vocabulary, Lesson } from "../../types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  useAddVocabularyMutation,
+  useDeleteVocabularyMutation,
+  useGetAllVocabulariesQuery,
+} from "@/redux/api/vocabularyApi";
+import { useGetAllLessonsQuery } from "@/redux/api/lessonApi";
+import { TLesson, TVocabulary, TVocabularyResponse } from "@/interfaces";
+import UpadateDataModal from "@/components/Modal/UpadateDataModal";
+import UpdateVocabulary from "@/components/Dashboard/Admin/UpdateVocabulary ";
+import { selectCurrentUser } from "@/redux/api/slices/authSlice";
+import { useAppSelector } from "@/redux/hooks";
 
 const VocabularyManagement = () => {
-  const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [newVocabulary, setNewVocabulary] = useState({
-    japaneseWord: "",
+  const user = useAppSelector(selectCurrentUser);
+  const loggedInUserEmail = user?.email;
+
+  const [newVocabulary, setNewVocabulary] = useState<Partial<TVocabulary>>({
+    word: "",
     pronunciation: "",
-    meaning: "",
-    usageContext: "",
-    lessonId: "",
+    whenToSay: "",
+    lessonNo: "",
+    adminEmail: loggedInUserEmail,
   });
-  const [filter, setFilter] = useState("");
+  const [selectedVocabulary, setSelectedVocabulary] =
+    useState<TVocabulary | null>();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  useEffect(() => {
-    // Fetch vocabularies and lessons from API
+  const { data: vocabularies, isLoading: isVocabulariesLoading } =
+    useGetAllVocabulariesQuery("");
+  const { data: lessons, isLoading: isLessonsLoading } =
+    useGetAllLessonsQuery("");
 
-    const fetchData = async () => {
-      const vocabResponse = await fetch("/api/vocabularies");
-      const vocabData = await vocabResponse.json();
-      setVocabularies(vocabData);
-
-      const lessonResponse = await fetch("/api/lessons");
-      const lessonData = await lessonResponse.json();
-      setLessons(lessonData);
-    };
-
-    fetchData();
-  }, []);
+  const [addVocabulary, { isLoading: isAdding }] = useAddVocabularyMutation();
+  const [deleteVocabulary, { isLoading: isDeleting }] =
+    useDeleteVocabularyMutation();
 
   const handleAddVocabulary = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add new vocabulary to API
-
-    const response = await fetch("/api/vocabularies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newVocabulary),
-    });
-
-    if (response.ok) {
-      const addedVocabulary = await response.json();
-      setVocabularies([...vocabularies, addedVocabulary]);
+    try {
+      await addVocabulary(newVocabulary).unwrap();
       setNewVocabulary({
-        japaneseWord: "",
+        word: "",
         pronunciation: "",
-        meaning: "",
-        usageContext: "",
-        lessonId: "",
+        whenToSay: "",
+        lessonNo: "",
+        adminEmail: "",
       });
-    } else {
-      alert("Failed to add vocabulary");
+    } catch (error) {
+      console.error("Failed to add vocabulary:", error);
     }
   };
 
   const handleDeleteVocabulary = async (vocabularyId: string) => {
     if (window.confirm("Are you sure you want to delete this vocabulary?")) {
-      // Delete vocabulary from API
-
-      const response = await fetch(`/api/vocabularies/${vocabularyId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setVocabularies(
-          vocabularies.filter((vocab) => vocab.id !== vocabularyId)
-        );
-      } else {
-        alert("Failed to delete vocabulary");
+      try {
+        await deleteVocabulary(vocabularyId);
+      } catch (error) {
+        console.error("Failed to delete vocabulary:", error);
       }
     }
   };
 
-  const filteredVocabularies = vocabularies.filter(
-    (vocab) => vocab.lessonId.toString() === filter || filter === ""
-  );
+  const handleOpenUpdateModal = (vocabulary: TVocabulary) => {
+    setSelectedVocabulary(vocabulary);
+    setIsUpdateModalOpen(true);
+  };
 
   return (
     <div>
@@ -82,9 +76,9 @@ const VocabularyManagement = () => {
       <form onSubmit={handleAddVocabulary} className="mb-4">
         <input
           type="text"
-          value={newVocabulary.japaneseWord}
+          value={newVocabulary.word || ""}
           onChange={(e) =>
-            setNewVocabulary({ ...newVocabulary, japaneseWord: e.target.value })
+            setNewVocabulary({ ...newVocabulary, word: e.target.value })
           }
           placeholder="Japanese Word"
           required
@@ -92,7 +86,7 @@ const VocabularyManagement = () => {
         />
         <input
           type="text"
-          value={newVocabulary.pronunciation}
+          value={newVocabulary.pronunciation || ""}
           onChange={(e) =>
             setNewVocabulary({
               ...newVocabulary,
@@ -105,39 +99,30 @@ const VocabularyManagement = () => {
         />
         <input
           type="text"
-          value={newVocabulary.meaning}
+          value={newVocabulary.whenToSay || ""}
           onChange={(e) =>
-            setNewVocabulary({ ...newVocabulary, meaning: e.target.value })
+            setNewVocabulary({ ...newVocabulary, whenToSay: e.target.value })
           }
-          placeholder="Meaning"
-          required
-          className="border p-2 mr-2"
-        />
-        <input
-          type="text"
-          value={newVocabulary.usageContext}
-          onChange={(e) =>
-            setNewVocabulary({ ...newVocabulary, usageContext: e.target.value })
-          }
-          placeholder="Usage Context"
+          placeholder="When to Say"
           required
           className="border p-2 mr-2"
         />
         <select
-          value={newVocabulary.lessonId}
+          value={newVocabulary.lessonNo}
           onChange={(e) =>
-            setNewVocabulary({ ...newVocabulary, lessonId: e.target.value })
+            setNewVocabulary({ ...newVocabulary, lessonNo: e.target.value })
           }
           required
           className="border p-2 mr-2"
         >
           <option value="">Select Lesson</option>
-          {lessons.map((lesson) => (
-            <option key={lesson.id} value={lesson.id}>
-              {lesson.name}
+          {lessons?.data?.map((lesson: TLesson) => (
+            <option key={lesson.lessonNo} value={lesson.lessonNo}>
+              {lesson.lessonNo}
             </option>
           ))}
         </select>
+
         <button
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
@@ -145,60 +130,51 @@ const VocabularyManagement = () => {
           Add Vocabulary
         </button>
       </form>
-      <div className="mb-4">
-        <label htmlFor="filter" className="mr-2">
-          Filter by Lesson:
-        </label>
-        <select
-          id="filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="border p-2"
-        >
-          <option value="">All Lessons</option>
-          {lessons.map((lesson) => (
-            <option key={lesson.id} value={lesson.id}>
-              {lesson.name}
-            </option>
-          ))}
-        </select>
-      </div>
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-gray-200">
             <th className="border p-2">Japanese Word</th>
             <th className="border p-2">Pronunciation</th>
-            <th className="border p-2">Meaning</th>
-            <th className="border p-2">Usage Context</th>
+            <th className="border p-2">When to Say</th>
             <th className="border p-2">Lesson</th>
             <th className="border p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filteredVocabularies.map((vocabulary) => (
-            <tr key={vocabulary.id} className="border">
-              <td className="border p-2">{vocabulary.japaneseWord}</td>
+          {vocabularies?.data?.map((vocabulary: any) => (
+            <tr key={vocabulary._id} className="border">
+              <td className="border p-2">{vocabulary.word}</td>
               <td className="border p-2">{vocabulary.pronunciation}</td>
-              <td className="border p-2">{vocabulary.meaning}</td>
-              <td className="border p-2">{vocabulary.usageContext}</td>
-              <td className="border p-2">
-                {
-                  lessons.find((lesson) => lesson.id === vocabulary.lessonId)
-                    ?.name
-                }
-              </td>
+              <td className="border p-2">{vocabulary.whenToSay}</td>
+              <td className="border p-2">{vocabulary?.lessonId?.lessonNo}</td>
               <td className="border p-2">
                 <button
-                  onClick={() => handleDeleteVocabulary(vocabulary.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded mr-2"
+                  onClick={() => handleOpenUpdateModal(vocabulary)}
+                  className="text-blue-500 hover:underline"
                 >
-                  Delete
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button
+                  onClick={() => handleDeleteVocabulary(vocabulary._id)}
+                  className="ml-2 text-red-500 hover:underline"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Update Vocabulary Modal */}
+      {isUpdateModalOpen && selectedVocabulary && (
+        <UpadateDataModal onClose={() => setIsUpdateModalOpen(false)}>
+          <UpdateVocabulary
+            vocabularyId={selectedVocabulary?._id}
+            onClose={() => setIsUpdateModalOpen(false)}
+          />
+        </UpadateDataModal>
+      )}
     </div>
   );
 };

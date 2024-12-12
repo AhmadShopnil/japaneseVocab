@@ -1,27 +1,47 @@
-export interface TUser {
-  id: string;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// export interface TUser {
+//   id: string;
+//   name: string;
+//   email: string;
+//   role: "user" | "admin";
+// }
+
+export type TUserResponse = {
+  _id: string;
   name: string;
   email: string;
-  role: "user" | "admin";
+  password: string;
+  role?: "user" | "admin";
+  profileImage?: string;
+};
+export interface TVocabularyResponse {
+  _id: string;
+  word: string;
+  pronunciation: string;
+  whenToSay: string;
+  lessonNo: string;
+  lessonId?: object;
+  adminEmail: string;
 }
 
 export interface TLesson {
-  id: string;
+  _id: string;
   name: string;
-  lessonNumber: number;
-  vocabularyCount: number;
+  lessonNo: number;
+  vocabularies?: any;
 }
 
-export interface Vocabulary {
-  id: string;
-  japaneseWord: string;
+export interface TVocabulary {
+  _id: string;
+  word: string;
   pronunciation: string;
-  meaning: string;
-  usageContext: string;
-  lessonId: string;
+  whenToSay: string;
+  lessonNo: string;
+  lessonId?: string;
+  adminEmail: string;
 }
 
-export interface Tutorial {
+export interface TTutorial {
   id: string;
   title: string;
   videoId: string;

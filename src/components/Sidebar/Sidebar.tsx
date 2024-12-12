@@ -12,8 +12,6 @@ const Sidebar = () => {
   const user = useAppSelector(selectCurrentUser);
   const role = user?.role;
 
-  console.log(role);
-
   useEffect(() => {
     if (role === "admin") {
       setMenuItems(adminMenuItem);
@@ -26,7 +24,7 @@ const Sidebar = () => {
     <div className="bg-black text-white  border-r h-full">
       <div className="flex items-center justify-center h-14 border-b">
         <Link className="text-2xl font-bold " to="/">
-          Bike Rent
+          JapaneseVocab
         </Link>
       </div>
 

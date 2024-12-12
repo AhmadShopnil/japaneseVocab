@@ -1,54 +1,54 @@
-import { useState, useEffect } from "react";
-import { Lesson } from "../../types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  useAddLessonMutation,
+  useDeleteLessonMutation,
+  useGetAllLessonsQuery,
+} from "@/redux/api/lessonApi";
+import { TLesson } from "@/interfaces";
+import UpadateDataModal from "@/components/Modal/UpadateDataModal";
+import UpdateLesson from "@/components/Dashboard/Admin/UpdateLesson";
 
 const LessonManagement = () => {
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [newLesson, setNewLesson] = useState({ name: "", lessonNumber: "" });
+  // const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [newLesson, setNewLesson] = useState({ name: "", lessonNo: "" });
+  const [addLesson, { isLoading }] = useAddLessonMutation();
+  const [deleteLesson, { isLoading: isDeleting }] = useDeleteLessonMutation();
+  const [selectedLesson, setSelectedLesson] = useState<TLesson | null>();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  useEffect(() => {
-    // Fetch lessons from API
+  // get leesons
+  const { data: lessons, isLoading: isLessonLoading } =
+    useGetAllLessonsQuery("");
 
-    const fetchLessons = async () => {
-      const response = await fetch("/api/lessons");
-      const data = await response.json();
-      setLessons(data);
-    };
-
-    fetchLessons();
-  }, []);
-
+  // handle add a new lesson
   const handleAddLesson = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("/api/lessons", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newLesson),
-    });
-
-    if (response.ok) {
-      const addedLesson = await response.json();
-      setLessons([...lessons, addedLesson]);
-      setNewLesson({ name: "", lessonNumber: "" });
-    } else {
-      alert("Failed to add lesson");
+    try {
+      await addLesson(newLesson).unwrap();
+      // console.log("add lesson:", response);
+    } catch (error: any) {
+      console.log("add lesson error:", error);
     }
   };
 
   const handleDeleteLesson = async (lessonId: string) => {
     if (window.confirm("Are you sure you want to delete this lesson?")) {
-      // Delete lesson from API
-      // This is a placeholder and should be replaced with actual API call
-      const response = await fetch(`/api/lessons/${lessonId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setLessons(lessons.filter((lesson) => lesson.id !== lessonId));
-      } else {
-        alert("Failed to delete lesson");
+      try {
+        await deleteLesson(lessonId);
+      } catch (error) {
+        console.error("Failed to delete bike:", error);
       }
     }
+  };
+
+  const handleOpenUpdateModal = (lesson: TLesson) => {
+    setSelectedLesson(lesson);
+    setIsUpdateModalOpen(true);
   };
 
   return (
@@ -65,9 +65,9 @@ const LessonManagement = () => {
         />
         <input
           type="number"
-          value={newLesson.lessonNumber}
+          value={newLesson.lessonNo}
           onChange={(e) =>
-            setNewLesson({ ...newLesson, lessonNumber: e.target.value })
+            setNewLesson({ ...newLesson, lessonNo: e.target.value })
           }
           placeholder="Lesson Number"
           required
@@ -90,23 +90,39 @@ const LessonManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {lessons.map((lesson) => (
-            <tr key={lesson.id} className="border">
+          {lessons?.data?.map((lesson: TLesson) => (
+            <tr key={lesson._id} className="border">
               <td className="border p-2">{lesson.name}</td>
-              <td className="border p-2">{lesson.lessonNumber}</td>
-              <td className="border p-2">{lesson.vocabularyCount}</td>
+              <td className="border p-2">{lesson.lessonNo}</td>
+              <td className="border p-2">{lesson?.vocabularies?.length}</td>
               <td className="border p-2">
                 <button
-                  onClick={() => handleDeleteLesson(lesson.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded mr-2"
+                  onClick={() => handleOpenUpdateModal(lesson)}
+                  className="text-blue-500 hover:underline"
                 >
-                  Delete
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button
+                  onClick={() => handleDeleteLesson(lesson._id)}
+                  className="ml-2 text-red-500 hover:underline"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Update Lesson Modal */}
+      {isUpdateModalOpen && selectedLesson && (
+        <UpadateDataModal onClose={() => setIsUpdateModalOpen(false)}>
+          <UpdateLesson
+            lessonId={selectedLesson._id}
+            onClose={() => setIsUpdateModalOpen(false)} // Close modal
+          />
+        </UpadateDataModal>
+      )}
     </div>
   );
 };

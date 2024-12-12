@@ -1,11 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../../store';
+import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../../store";
 
 export type TUser = {
   userId: string;
   role: string;
   iat: number;
   exp: number;
+  email?: string;
 };
 
 type TAuthState = {
@@ -19,7 +20,7 @@ const initialState: TAuthState = {
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setUser: (state, action) => {

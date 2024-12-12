@@ -43,11 +43,13 @@ const userApi = baseApi.injectEndpoints({
       },
       providesTags: ["profile"],
     }),
-    makeAdmin: build.mutation({
-      query: (id) => {
+    changeUserRole: build.mutation({
+      query: (data) => {
         return {
-          url: `/users/makeAdmin/${id}`,
+          url: `/users/changeRole/${data?.userId}`,
           method: "PUT",
+          contentType: "application/json",
+          body: data,
         };
       },
       invalidatesTags: ["users"],
@@ -78,7 +80,7 @@ export const {
   useGetAllUsersQuery,
   useLoginMutation,
   useSignUpMutation,
-  useMakeAdminMutation,
+  useChangeUserRoleMutation,
   useDeleteSingleUserMutation,
   useUpdateProfileMutation,
 } = userApi;
