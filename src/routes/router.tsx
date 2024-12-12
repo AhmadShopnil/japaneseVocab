@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
     children: [
       // User Routes
       {
-        path: "user",
+        index: true,
         element: <UserDashboard />,
       },
       {
