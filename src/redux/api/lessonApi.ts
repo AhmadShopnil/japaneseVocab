@@ -49,7 +49,7 @@ const lessonApi = baseApi.injectEndpoints({
         contentType: "application/json",
         body: updatedData,
       }),
-      invalidatesTags: ["lessons"],
+      invalidatesTags: ["lessons", "vocabularies"],
     }),
   }),
 });

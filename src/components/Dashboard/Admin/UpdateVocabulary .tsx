@@ -35,7 +35,8 @@ const UpdateVocabulary = ({ vocabularyId, onClose }: UpdateVocabularyProps) => {
         word: vocabulary?.data.word || "",
         pronunciation: vocabulary?.data?.pronunciation || "",
         whenToSay: vocabulary?.data?.whenToSay || "",
-        lessonNo: vocabulary?.data?.lessonNo,
+        // lessonNo: vocabulary?.data?.lessonNo,
+        lessonNo: vocabulary?.data?.lessonId?.lessonNo,
         lessonId: vocabulary?.data?.lessonId || "",
       });
     }
@@ -135,7 +136,7 @@ const UpdateVocabulary = ({ vocabularyId, onClose }: UpdateVocabularyProps) => {
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label
             htmlFor="lessonId"
             className="block text-gray-700 font-medium mb-2"
@@ -150,7 +151,7 @@ const UpdateVocabulary = ({ vocabularyId, onClose }: UpdateVocabularyProps) => {
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
           />
-        </div>
+        </div> */}
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
