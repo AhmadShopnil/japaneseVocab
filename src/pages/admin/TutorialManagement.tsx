@@ -70,7 +70,7 @@ const TutorialManagement = () => {
         />
         <button
           type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-4 py-2 rounded mt-2 md:mt-0"
           disabled={isAdding}
         >
           {isAdding ? "Adding..." : "Add Tutorial"}

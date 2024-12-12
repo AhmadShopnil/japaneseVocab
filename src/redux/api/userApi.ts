@@ -34,10 +34,10 @@ const userApi = baseApi.injectEndpoints({
       },
       providesTags: ["users"],
     }),
-    getMyProfileBy: build.query({
+    getMyProfile: build.query({
       query: () => {
         return {
-          url: `/users/me`,
+          url: `/auth/me`,
           method: "GET",
         };
       },
@@ -76,7 +76,7 @@ const userApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useGetMyProfileByQuery,
+  useGetMyProfileQuery,
   useGetAllUsersQuery,
   useLoginMutation,
   useSignUpMutation,

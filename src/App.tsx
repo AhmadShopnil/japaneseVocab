@@ -4,7 +4,7 @@ import Providers from "./lib/Providers/Providers";
 
 function App() {
   return (
-    <div className="container mx-auto">
+    <div className=" mx-auto">
       <Providers>
         <RouterProvider router={router} />
       </Providers>

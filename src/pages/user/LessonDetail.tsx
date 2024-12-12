@@ -77,7 +77,7 @@ const LessonDetail = () => {
           <p className="mb-2">
             Pronunciation: {currentVocabulary?.pronunciation}
           </p>
-          <p className="mb-2">Meaning: {currentVocabulary?.whenToSay}</p>
+          {/* <p className="mb-2">Meaning: {currentVocabulary?.whenToSay}</p> */}
           <p className="mb-4">Usage: {currentVocabulary?.whenToSay}</p>
           <button
             onClick={() => pronounceWord(currentVocabulary?.word)}
