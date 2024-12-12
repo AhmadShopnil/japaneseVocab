@@ -53,6 +53,10 @@ export const router = createBrowserRouter([
         element: <UserDashboard />,
       },
       {
+        path: "user",
+        element: <UserDashboard />,
+      },
+      {
         path: "user/lessons",
         element: <Lessons />,
       },
@@ -76,13 +80,12 @@ export const router = createBrowserRouter([
 
       // Admin Routes
       {
+        index: true,
+        element: <AdminDashboard />,
+      },
+      {
         path: "admin",
-        element: (
-          // <AdminRoute>
-          //   <AdminDashboard />
-          // </AdminRoute>
-          <AdminDashboard />
-        ),
+        element: <AdminDashboard />,
       },
       {
         path: "admin/users",
