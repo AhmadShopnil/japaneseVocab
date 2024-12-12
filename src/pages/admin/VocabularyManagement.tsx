@@ -11,7 +11,7 @@ import {
 import { useGetAllLessonsQuery } from "@/redux/api/lessonApi";
 import { TLesson, TVocabulary, TVocabularyResponse } from "@/interfaces";
 import UpadateDataModal from "@/components/Modal/UpadateDataModal";
-import UpdateVocabulary from "@/components/Dashboard/Admin/UpdateVocabulary ";
+import UpdateVocabulary from "@/components/Admin/UpdateVocabulary ";
 import { selectCurrentUser } from "@/redux/api/slices/authSlice";
 import { useAppSelector } from "@/redux/hooks";
 

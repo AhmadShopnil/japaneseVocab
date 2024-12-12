@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import TutorialCardMange from "@/components/Admin/TutorialCardMange";
 import {
   useAddTutorialMutation,
   useDeleteTutorialMutation,
@@ -15,7 +16,7 @@ const TutorialManagement = () => {
     isError,
   } = useGetAllTutorialsQuery("");
   const [addTutorial, { isLoading: isAdding }] = useAddTutorialMutation();
-  const [deleteTutorial] = useDeleteTutorialMutation();
+
   const [newTutorial, setNewTutorial] = useState({
     title: "",
     videoId: "",
@@ -31,16 +32,6 @@ const TutorialManagement = () => {
       setNewTutorial({ title: "", videoId: "", otherResource: "" });
     } catch (error: any) {
       console.log(error);
-    }
-  };
-
-  const handleDeleteTutorial = async (tutorialId: string) => {
-    if (window.confirm("Are you sure you want to delete this tutorial?")) {
-      try {
-        await deleteTutorial(tutorialId).unwrap();
-      } catch (error: any) {
-        console.log(error);
-      }
     }
   };
 
@@ -85,26 +76,9 @@ const TutorialManagement = () => {
           {isAdding ? "Adding..." : "Add Tutorial"}
         </button>
       </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden ">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-hidden ">
         {tutorials?.data?.map((tutorial: any) => (
-          <div key={tutorial._id} className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">{tutorial?.title}</h3>
-            <div className="aspect-w-16 aspect-h-9 mb-2">
-              <iframe
-                src={`https://www.youtube.com/embed/${tutorial?.videoId}`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-            <p className="mb-2">{tutorial?.otherResource}</p>
-            <button
-              onClick={() => handleDeleteTutorial(tutorial._id)}
-              className="bg-red-500 text-white px-2 py-1 rounded"
-            >
-              Delete
-            </button>
-          </div>
+          <TutorialCardMange key={tutorial?._id} tutorial={tutorial} />
         ))}
       </div>
     </div>

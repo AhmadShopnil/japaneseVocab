@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Lessons from "../pages/user/Lessons";
-import LessonDetail from "../pages/LessonDetail";
+import LessonDetail from "../pages/user/LessonDetail";
 import Tutorials from "../pages/user/Tutorials";
 
 import LessonManagement from "../pages/admin/LessonManagement";
@@ -54,30 +54,23 @@ export const router = createBrowserRouter([
       },
       {
         path: "user/lessons",
-        element: (
-          // <PrivateRoute>
-          //   <Lessons />
-          // </PrivateRoute>
-          <Lessons />
-        ),
+        element: <Lessons />,
       },
       {
         path: "user/lessons/:lessonId",
-        element: (
-          // <PrivateRoute>
-          //   <LessonDetail />
-          // </PrivateRoute>
-          <LessonDetail />
-        ),
+        element: <LessonDetail />,
+      },
+      {
+        path: "user/vocabularies",
+        element: <Lessons />,
+      },
+      {
+        path: "user/vocabularies/:vocabularyId",
+        element: <LessonDetail />,
       },
       {
         path: "user/tutorials",
-        element: (
-          // <PrivateRoute>
-          //   <Tutorials />
-          // </PrivateRoute>
-          <Tutorials />
-        ),
+        element: <Tutorials />,
       },
       { path: "user/help", element: <Help /> },
 

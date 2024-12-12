@@ -10,7 +10,7 @@ import {
 } from "@/redux/api/lessonApi";
 import { TLesson } from "@/interfaces";
 import UpadateDataModal from "@/components/Modal/UpadateDataModal";
-import UpdateLesson from "@/components/Dashboard/Admin/UpdateLesson";
+import UpdateLesson from "@/components/Admin/UpdateLesson";
 
 const LessonManagement = () => {
   // const [lessons, setLessons] = useState<Lesson[]>([]);

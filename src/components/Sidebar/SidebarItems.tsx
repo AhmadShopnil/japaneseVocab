@@ -52,6 +52,11 @@ export const userMenuItem: TSidebarItem[] = [
     path: "/dashboard/user/tutorials",
     icon: FileText,
   },
+  // {
+  //   name: "Vocabularies",
+  //   path: "/dashboard/user/vocabularies",
+  //   icon: FileText,
+  // },
   {
     name: "Help",
     path: "/dashboard/user/help",
