@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,7 @@ import {
   useGetAllVocabulariesQuery,
 } from "@/redux/api/vocabularyApi";
 import { useGetAllLessonsQuery } from "@/redux/api/lessonApi";
-import { TLesson, TVocabulary } from "@/interfaces";
+import { TVocabulary } from "@/interfaces";
 import UpadateDataModal from "@/components/Modal/UpadateDataModal";
 import UpdateVocabulary from "@/components/Admin/UpdateVocabulary ";
 import { selectCurrentUser } from "@/redux/api/slices/authSlice";
@@ -30,14 +30,11 @@ const VocabularyManagement = () => {
     useState<TVocabulary | null>();
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  const { data: vocabularies, isLoading: isVocabulariesLoading } =
-    useGetAllVocabulariesQuery("");
-  const { data: lessons, isLoading: isLessonsLoading } =
-    useGetAllLessonsQuery("");
+  const { data: vocabularies } = useGetAllVocabulariesQuery("");
+  const { data: lessons } = useGetAllLessonsQuery("");
 
-  const [addVocabulary, { isLoading: isAdding }] = useAddVocabularyMutation();
-  const [deleteVocabulary, { isLoading: isDeleting }] =
-    useDeleteVocabularyMutation();
+  const [addVocabulary] = useAddVocabularyMutation();
+  const [deleteVocabulary] = useDeleteVocabularyMutation();
 
   const handleAddVocabulary = async (e: React.FormEvent) => {
     e.preventDefault();
