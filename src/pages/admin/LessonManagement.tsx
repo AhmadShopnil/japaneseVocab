@@ -11,6 +11,8 @@ import {
 import { TLesson } from "@/interfaces";
 import UpadateDataModal from "@/components/Modal/UpadateDataModal";
 import UpdateLesson from "@/components/Admin/UpdateLesson";
+import { SkeletonTable } from "@/components/Skeleton/SkeletonTable";
+import { SkeletonItemCard } from "@/components/Skeleton/SkeletonItemCard";
 
 const LessonManagement = () => {
   const [newLesson, setNewLesson] = useState({ name: "", lessonNo: "" });
@@ -20,7 +22,12 @@ const LessonManagement = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   // Get lessons
-  const { data: lessons } = useGetAllLessonsQuery("");
+  const {
+    data: lessons,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useGetAllLessonsQuery("");
 
   // Handle add a new lesson
   const handleAddLesson = async (e: React.FormEvent) => {
@@ -48,6 +55,107 @@ const LessonManagement = () => {
     setIsUpdateModalOpen(true);
   };
 
+  let content;
+
+  if (isLoading) {
+    content = (
+      <div>
+        <div className="hidden lg:block">
+          <SkeletonTable />
+        </div>
+        <div className="lg:hidden">
+          <SkeletonItemCard />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    content = (
+      <p className="text-center text-red-500">
+        Failed to load lessons. Please try again later.
+      </p>
+    );
+  }
+  if (isSuccess) {
+    content = (
+      <div>
+        {/* Table for larger screens */}
+        <div className="hidden lg:block">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border p-2">Lesson Name</th>
+                <th className="border p-2">Lesson Number</th>
+                <th className="border p-2">Vocabulary Count</th>
+                <th className="border p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lessons?.data?.map((lesson: TLesson) => (
+                <tr key={lesson._id} className="border">
+                  <td className="border p-2">{lesson.name}</td>
+                  <td className="border p-2">{lesson.lessonNo}</td>
+                  <td className="border p-2">{lesson?.vocabularies?.length}</td>
+                  <td className="border p-2">
+                    <button
+                      onClick={() => handleOpenUpdateModal(lesson)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteLesson(lesson._id)}
+                      className="ml-2 text-red-500 hover:underline"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Card View for smaller screens */}
+        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {lessons?.data?.map((lesson: TLesson) => (
+            <div
+              key={lesson._id}
+              className="bg-white p-4 rounded-lg shadow-lg border border-gray-200"
+            >
+              <h3 className="text-xl font-semibold text-gray-800">
+                {lesson.name}
+              </h3>
+              <p className="text-gray-600">Lesson No: {lesson.lessonNo}</p>
+              <p className="text-gray-600">
+                Vocabulary Count: {lesson?.vocabularies?.length}
+              </p>
+
+              <div className="mt-4 flex space-x-2">
+                <button
+                  onClick={() => handleOpenUpdateModal(lesson)}
+                  className="bg-blue-500 text-white px-3 py-2 rounded"
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button
+                  onClick={() => handleDeleteLesson(lesson._id)}
+                  className="bg-red-500 text-white px-3 py-2 rounded"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (lessons?.data?.length == 0) {
+    content = <p className="text-center text-gray-600">No lessons found.</p>;
+  }
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Lesson Management</h2>
@@ -80,76 +188,7 @@ const LessonManagement = () => {
         </button>
       </form>
 
-      {/* Table for larger screens */}
-      <div className="hidden lg:block">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Lesson Name</th>
-              <th className="border p-2">Lesson Number</th>
-              <th className="border p-2">Vocabulary Count</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lessons?.data?.map((lesson: TLesson) => (
-              <tr key={lesson._id} className="border">
-                <td className="border p-2">{lesson.name}</td>
-                <td className="border p-2">{lesson.lessonNo}</td>
-                <td className="border p-2">{lesson?.vocabularies?.length}</td>
-                <td className="border p-2">
-                  <button
-                    onClick={() => handleOpenUpdateModal(lesson)}
-                    className="text-blue-500 hover:underline"
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteLesson(lesson._id)}
-                    className="ml-2 text-red-500 hover:underline"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Card View for smaller screens */}
-      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {lessons?.data?.map((lesson: TLesson) => (
-          <div
-            key={lesson._id}
-            className="bg-white p-4 rounded-lg shadow-lg border border-gray-200"
-          >
-            <h3 className="text-xl font-semibold text-gray-800">
-              {lesson.name}
-            </h3>
-            <p className="text-gray-600">Lesson No: {lesson.lessonNo}</p>
-            <p className="text-gray-600">
-              Vocabulary Count: {lesson?.vocabularies?.length}
-            </p>
-
-            <div className="mt-4 flex space-x-2">
-              <button
-                onClick={() => handleOpenUpdateModal(lesson)}
-                className="bg-blue-500 text-white px-3 py-2 rounded"
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button
-                onClick={() => handleDeleteLesson(lesson._id)}
-                className="bg-red-500 text-white px-3 py-2 rounded"
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
+      {content}
       {/* Update Lesson Modal */}
       {isUpdateModalOpen && selectedLesson && (
         <UpadateDataModal onClose={() => setIsUpdateModalOpen(false)}>

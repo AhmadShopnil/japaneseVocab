@@ -1,10 +1,31 @@
 import { Link } from "react-router-dom";
 import { TLesson } from "../../interfaces";
 import { useGetAllLessonsQuery } from "@/redux/api/lessonApi";
+import { SkeletonItemCard } from "@/components/Skeleton/SkeletonItemCard";
 
 const Lessons = () => {
   // get all lessons
-  const { data: lessons } = useGetAllLessonsQuery("");
+  const { data: lessons, isLoading, isError } = useGetAllLessonsQuery("");
+
+  if (isLoading) {
+    return (
+      <div className="">
+        <SkeletonItemCard />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load users. Please try again later.
+      </p>
+    );
+  }
+
+  if (lessons?.data?.length == 0) {
+    return <p className="text-center text-gray-600">No users found.</p>;
+  }
 
   return (
     <div>

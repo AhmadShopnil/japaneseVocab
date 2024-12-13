@@ -34,7 +34,7 @@ export function DashboardNav() {
       </button>
       {user && (
         <button onClick={handleLogOut} className=" text-center">
-          <LogOut className={`text-xl mx-auto text-teal-500`} />
+          <LogOut className={`text-xl mx-auto text-red-500`} />
           {/* <LogOut /> */}
         </button>
       )}

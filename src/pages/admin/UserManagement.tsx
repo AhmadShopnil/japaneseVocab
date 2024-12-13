@@ -1,29 +1,58 @@
+import { SkeletonItemCard } from "@/components/Skeleton/SkeletonItemCard";
+import { SkeletonTable } from "@/components/Skeleton/SkeletonTable";
+import Spinner from "@/components/Spinner/Spinner";
 import { TUserResponse } from "@/interfaces";
 import {
   useChangeUserRoleMutation,
   useGetAllUsersQuery,
 } from "@/redux/api/userApi";
+import { useState } from "react";
 
 const UserManagement = () => {
   const [changeUserRole] = useChangeUserRoleMutation();
-
-  // Get all Users
-  const { data: users } = useGetAllUsersQuery("");
+  const { data: users, isLoading, isError } = useGetAllUsersQuery("");
+  const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
 
   const handleRoleChange = async (
     userId: string,
     newRole: "user" | "admin"
   ) => {
-    const data = {
-      userId,
-      role: newRole,
-    };
-    changeUserRole(data);
+    setLoadingUserId(userId);
+    try {
+      await changeUserRole({ userId, role: newRole }).unwrap();
+    } finally {
+      setLoadingUserId(null);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="hidden lg:block">
+          <SkeletonTable />
+        </div>
+        <div className="lg:hidden">
+          <SkeletonItemCard />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load users. Please try again later.
+      </p>
+    );
+  }
+
+  if (users?.data?.length == 0) {
+    return <p className="text-center text-gray-600">No users found.</p>;
+  }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+      <h2 className="text-2xl text-center font-bold mb-4">User Management</h2>
 
       {/* Table for larger screens */}
       <div className="hidden lg:block">
@@ -46,16 +75,24 @@ const UserManagement = () => {
                   {user.role === "user" ? (
                     <button
                       onClick={() => handleRoleChange(user._id, "admin")}
-                      className="bg-blue-500 text-white px-2 py-1 rounded"
+                      className="bg-blue-500 text-white px-2 py-1 rounded flex items-center justify-center"
                     >
-                      Promote to Admin
+                      {loadingUserId === user._id ? (
+                        <Spinner />
+                      ) : (
+                        "Promote to Admin"
+                      )}
                     </button>
                   ) : (
                     <button
                       onClick={() => handleRoleChange(user._id, "user")}
-                      className="bg-red-500 text-white px-2 py-1 rounded"
+                      className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
                     >
-                      Demote to User
+                      {loadingUserId === user._id ? (
+                        <Spinner />
+                      ) : (
+                        "Demote to User"
+                      )}
                     </button>
                   )}
                 </td>
@@ -80,16 +117,20 @@ const UserManagement = () => {
               {user.role === "user" ? (
                 <button
                   onClick={() => handleRoleChange(user._id, "admin")}
-                  className="bg-blue-500 text-white px-3 py-2 rounded"
+                  className="bg-blue-500 text-white px-3 py-2 rounded flex items-center justify-center"
                 >
-                  Promote to Admin
+                  {loadingUserId === user._id ? (
+                    <Spinner />
+                  ) : (
+                    "Promote to Admin"
+                  )}
                 </button>
               ) : (
                 <button
                   onClick={() => handleRoleChange(user._id, "user")}
-                  className="bg-red-500 text-white px-3 py-2 rounded"
+                  className="bg-red-500 text-white px-3 py-2 rounded flex items-center justify-center"
                 >
-                  Demote to User
+                  {loadingUserId === user._id ? <Spinner /> : "Demote to User"}
                 </button>
               )}
             </div>

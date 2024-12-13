@@ -1,5 +1,9 @@
 const Help = () => {
-  return <div>Help</div>;
+  return (
+    <div>
+      <h3 className="text-center">Commig soon..</h3>
+    </div>
+  );
 };
 
 export default Help;

@@ -14,6 +14,8 @@ import UpadateDataModal from "@/components/Modal/UpadateDataModal";
 import UpdateVocabulary from "@/components/Admin/UpdateVocabulary ";
 import { selectCurrentUser } from "@/redux/api/slices/authSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { SkeletonTable } from "@/components/Skeleton/SkeletonTable";
+import { SkeletonItemCard } from "@/components/Skeleton/SkeletonItemCard";
 
 const VocabularyManagement = () => {
   const user = useAppSelector(selectCurrentUser);
@@ -30,7 +32,12 @@ const VocabularyManagement = () => {
     useState<TVocabulary | null>();
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  const { data: vocabularies } = useGetAllVocabulariesQuery("");
+  const {
+    data: vocabularies,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useGetAllVocabulariesQuery("");
   const { data: lessons } = useGetAllLessonsQuery("");
 
   const [addVocabulary] = useAddVocabularyMutation();
@@ -66,6 +73,114 @@ const VocabularyManagement = () => {
     setSelectedVocabulary(vocabulary);
     setIsUpdateModalOpen(true);
   };
+
+  let content;
+
+  if (isLoading) {
+    content = (
+      <div>
+        <div className="hidden lg:block">
+          <SkeletonTable />
+        </div>
+        <div className="lg:hidden">
+          <SkeletonItemCard />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    content = (
+      <p className="text-center text-red-500">
+        Failed to load vocabularies. Please try again later.
+      </p>
+    );
+  }
+  if (isSuccess) {
+    content = (
+      <div>
+        {/* Vocabulary Card View */}
+        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {vocabularies?.data?.map((vocabulary: any) => (
+            <div
+              key={vocabulary._id}
+              className="border p-4 rounded-lg shadow-md bg-white"
+            >
+              <h3 className="text-xl font-semibold">{vocabulary.word}</h3>
+              <p className="text-sm text-gray-500">
+                {vocabulary.pronunciation}
+              </p>
+              <p className="text-sm text-gray-700">{vocabulary.whenToSay}</p>
+              <p className="text-sm text-gray-500">
+                Lesson: {vocabulary?.lessonId?.lessonNo}
+              </p>
+              <div className="mt-4 flex justify-between items-center">
+                <button
+                  onClick={() => handleOpenUpdateModal(vocabulary)}
+                  className="text-blue-500 hover:underline"
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button
+                  onClick={() => handleDeleteVocabulary(vocabulary._id)}
+                  className="ml-2 text-red-500 hover:underline"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Vocabulary Table View (Optional, can be toggled) */}
+        <div className="hidden lg:block overflow-x-auto mt-8">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border p-2">Japanese Word</th>
+                <th className="border p-2">Pronunciation</th>
+                <th className="border p-2">When to Say</th>
+                <th className="border p-2">Lesson</th>
+                <th className="border p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vocabularies?.data?.map((vocabulary: any) => (
+                <tr key={vocabulary._id} className="border">
+                  <td className="border p-2">{vocabulary.word}</td>
+                  <td className="border p-2">{vocabulary.pronunciation}</td>
+                  <td className="border p-2">{vocabulary.whenToSay}</td>
+                  <td className="border p-2">
+                    {vocabulary?.lessonId?.lessonNo}
+                  </td>
+                  <td className="border p-2">
+                    <button
+                      onClick={() => handleOpenUpdateModal(vocabulary)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteVocabulary(vocabulary._id)}
+                      className="ml-2 text-red-500 hover:underline"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  if (vocabularies?.data?.length == 0) {
+    content = (
+      <p className="text-center text-gray-600">No vocabularies found.</p>
+    );
+  }
 
   return (
     <div>
@@ -128,75 +243,7 @@ const VocabularyManagement = () => {
         </button>
       </form>
 
-      {/* Vocabulary Card View */}
-      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {vocabularies?.data?.map((vocabulary: any) => (
-          <div
-            key={vocabulary._id}
-            className="border p-4 rounded-lg shadow-md bg-white"
-          >
-            <h3 className="text-xl font-semibold">{vocabulary.word}</h3>
-            <p className="text-sm text-gray-500">{vocabulary.pronunciation}</p>
-            <p className="text-sm text-gray-700">{vocabulary.whenToSay}</p>
-            <p className="text-sm text-gray-500">
-              Lesson: {vocabulary?.lessonId?.lessonNo}
-            </p>
-            <div className="mt-4 flex justify-between items-center">
-              <button
-                onClick={() => handleOpenUpdateModal(vocabulary)}
-                className="text-blue-500 hover:underline"
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button
-                onClick={() => handleDeleteVocabulary(vocabulary._id)}
-                className="ml-2 text-red-500 hover:underline"
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Vocabulary Table View (Optional, can be toggled) */}
-      <div className="hidden lg:block overflow-x-auto mt-8">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Japanese Word</th>
-              <th className="border p-2">Pronunciation</th>
-              <th className="border p-2">When to Say</th>
-              <th className="border p-2">Lesson</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vocabularies?.data?.map((vocabulary: any) => (
-              <tr key={vocabulary._id} className="border">
-                <td className="border p-2">{vocabulary.word}</td>
-                <td className="border p-2">{vocabulary.pronunciation}</td>
-                <td className="border p-2">{vocabulary.whenToSay}</td>
-                <td className="border p-2">{vocabulary?.lessonId?.lessonNo}</td>
-                <td className="border p-2">
-                  <button
-                    onClick={() => handleOpenUpdateModal(vocabulary)}
-                    className="text-blue-500 hover:underline"
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteVocabulary(vocabulary._id)}
-                    className="ml-2 text-red-500 hover:underline"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {content}
 
       {/* Update Vocabulary Modal */}
       {isUpdateModalOpen && selectedVocabulary && (

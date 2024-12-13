@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import TutorialCardMange from "@/components/Admin/TutorialCardMange";
+import SkeletonCard from "@/components/Skeleton/SkeletonCard";
 import {
   useAddTutorialMutation,
   useGetAllTutorialsQuery,
@@ -9,7 +9,11 @@ import {
 import { useState } from "react";
 
 const TutorialManagement = () => {
-  const { data: tutorials = [] } = useGetAllTutorialsQuery("");
+  const {
+    data: tutorials = [],
+    isLoading,
+    isError,
+  } = useGetAllTutorialsQuery("");
   const [addTutorial, { isLoading: isAdding }] = useAddTutorialMutation();
 
   const [newTutorial, setNewTutorial] = useState({
@@ -33,7 +37,8 @@ const TutorialManagement = () => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Tutorial Management</h2>
-      <form onSubmit={handleAddTutorial} className="mb-4">
+      {/* from for add new tutorial */}
+      <form onSubmit={handleAddTutorial} className="mb-4 mt-6">
         <input
           type="text"
           value={newTutorial.title}
@@ -71,11 +76,29 @@ const TutorialManagement = () => {
           {isAdding ? "Adding..." : "Add Tutorial"}
         </button>
       </form>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-hidden ">
-        {tutorials?.data?.map((tutorial: any) => (
-          <TutorialCardMange key={tutorial?._id} tutorial={tutorial} />
-        ))}
-      </div>
+      {/* View ALl Tutorials Here */}
+      {isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <SkeletonCard key={idx} />
+          ))}
+        </div>
+      )}
+      {isError && (
+        <p className="text-red-500 text-center">
+          Failed to load tutorials. Please try again later.
+        </p>
+      )}
+      {!isLoading && tutorials?.data?.length === 0 && (
+        <p className="text-center text-gray-600">No tutorials available.</p>
+      )}
+      {!isLoading && !isError && tutorials?.data?.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-hidden">
+          {tutorials?.data?.map((tutorial: any) => (
+            <TutorialCardMange key={tutorial?._id} tutorial={tutorial} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
